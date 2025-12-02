@@ -1,299 +1,343 @@
-# Screenshot
-<img width="386" height="827" alt="Registrasi" src="https://github.com/user-attachments/assets/fcde7b1b-f4b1-4891-af13-707219be9477" />
-<img width="386" height="827" alt="Login" src="https://github.com/user-attachments/assets/60092961-1eb3-4e31-9226-68e577d7a4d4" />
-<img width="386" height="827" alt="List" src="https://github.com/user-attachments/assets/71c53328-f5c7-4a21-9280-ea26f9bd83b0" />
-<img width="386" height="827" alt="Detail" src="https://github.com/user-attachments/assets/654af922-9e7e-4048-bc04-9f135c80ef5c" />
-<img width="386" height="827" alt="Tambah" src="https://github.com/user-attachments/assets/1f5f2548-d646-451d-9bd8-6790460e4923" />
-<img width="386" height="827" alt="Edit" src="https://github.com/user-attachments/assets/461b4e2e-d219-40b6-8709-134832aa39c2" />
+## Pengenalan
 
-# Penjelasan
+Folder `lib` merupakan folder utama yang berisi kode sumber aplikasi TokoKita. Aplikasi ini adalah aplikasi manajemen produk dengan fitur autentikasi (login dan registrasi) yang dibangun menggunakan Flutter.
 
-## model/login.dart
-Fungsi Utama: Model class untuk menampung data response dari API login. <br>
-Properti:
-* `code (int?)` - Kode status response dari server
-* `status (bool?)` - Status berhasil/gagal login
-* `token (String?)` - Token autentikasi untuk session
-* `userID (int?)` - ID unik pengguna
-* `userEmail (String?)` - Email pengguna yang login
+## Model
 
-Method:
+### 1. model/login.dart
 
-`fromJson()` - Factory constructor untuk konversi data JSON dari API menjadi object Login
+**Fungsi Utama:**
+Model class untuk menampung data response dari API login.
 
-Mengecek kode response (200 = sukses)
-Jika sukses, parse semua data termasuk token dan user info
-Jika gagal, hanya parse code dan status
+**Properti:**
+- `code` (int?) - Kode status response dari server
+- `status` (bool?) - Status berhasil/gagal login
+- `token` (String?) - Token autentikasi untuk session
+- `userID` (int?) - ID unik pengguna
+- `userEmail` (String?) - Email pengguna yang login
 
-## model/produk.dart
-Fungsi Utama: Model class untuk merepresentasikan data produk dalam aplikasi. <br>
-Properti:
+**Method:**
+- `fromJson()` - Factory constructor untuk konversi data JSON dari API menjadi object Login
+  - Mengecek kode response (200 = sukses)
+  - Jika sukses, parse semua data termasuk token dan user info
+  - Jika gagal, hanya parse code dan status
 
-* `id (String?)` - ID unik produk
-* `kodeProduk (String?)` - Kode identifikasi produk (contoh: A001)
-* `namaProduk (String?)` - Nama produk
-* `hargaProduk (dynamic)` - Harga produk (bisa int atau double)
+**Contoh Penggunaan:**
+```dart
+// Response sukses dengan kode 200
+Login loginData = Login.fromJson({
+  'code': 200,
+  'status': true,
+  'data': {
+    'token': 'abc123xyz',
+    'user': {
+      'id': '1',
+      'email': 'user@example.com'
+    }
+  }
+});
 
-Method:
+// Response gagal
+Login loginFailed = Login.fromJson({
+  'code': 401,
+  'status': false
+});
+```
 
-`fromJson()` - Factory constructor untuk mapping data JSON dari API ke object Produk
+---
 
-Mengkonversi key snake_case (kode_produk, nama_produk) dari API menjadi camelCase di Dart <br>
-Field 'harga' dari API di-mapping ke 'hargaProduk'
+### 2. model/produk.dart
 
-## model/registrasi.dart
-Fungsi Utama: Model class untuk menangani response dari proses registrasi pengguna baru. <br>
-Properti:
+**Fungsi Utama:**
+Model class untuk merepresentasikan data produk dalam aplikasi.
 
-* `code (int?)` - Kode status response dari server
-* `status (bool?)` - Status berhasil/gagal registrasi
-* `data (String?)` - Pesan atau informasi tambahan dari server
+**Properti:**
+- `id` (String?) - ID unik produk
+- `kodeProduk` (String?) - Kode identifikasi produk (contoh: A001)
+- `namaProduk` (String?) - Nama produk
+- `hargaProduk` (dynamic) - Harga produk (bisa int atau double)
 
-Method:
+**Method:**
+- `fromJson()` - Factory constructor untuk mapping data JSON dari API ke object Produk
+  - Mengkonversi key snake_case (kode_produk, nama_produk) dari API menjadi camelCase di Dart
+  - Field 'harga' dari API di-mapping ke 'hargaProduk'
 
-`fromJson()` - Factory constructor sederhana untuk parsing response registrasi dari API
+**Contoh Penggunaan:**
+```dart
+Produk produk = Produk.fromJson({
+  'id': '1',
+  'kode_produk': 'A001',
+  'nama_produk': 'Kamera',
+  'harga': 5000000
+});
 
-Mengkonversi ketiga field dari JSON menjadi object Registrasi
+print(produk.namaProduk); // Output: Kamera
+```
 
-## ui/login_page.dart
-Fungsi Utama: Halaman untuk autentikasi pengguna masuk ke aplikasi. <br>
-State Management:
+---
 
-* `_formKey` - GlobalKey untuk validasi form
-* `_isLoading` - Boolean untuk status loading
-* `_emailTextboxController` - Controller untuk input email
-* `_passwordTextboxController` - Controller untuk input password
+### 3. model/registrasi.dart
 
-Widget Components:
-`_emailTextField()`
+**Fungsi Utama:**
+Model class untuk menangani response dari proses registrasi pengguna baru.
 
-Input field untuk email pengguna <br>
-Validasi: email harus diisi (tidak boleh kosong)
+**Properti:**
+- `code` (int?) - Kode status response dari server
+- `status` (bool?) - Status berhasil/gagal registrasi
+- `data` (String?) - Pesan atau informasi tambahan dari server
 
-`_passwordTextField()`
+**Method:**
+- `fromJson()` - Factory constructor sederhana untuk parsing response registrasi dari API
+  - Mengkonversi ketiga field dari JSON menjadi object Registrasi
 
-Input field untuk password <br>
-Property obscureText: true untuk menyembunyikan karakter password <br>
-Validasi: password harus diisi
+**Contoh Penggunaan:**
+```dart
+Registrasi result = Registrasi.fromJson({
+  'code': 200,
+  'status': true,
+  'data': 'Registrasi berhasil'
+});
+```
 
-`_buttonLogin()`
+---
 
-Tombol untuk submit form login <br>
-Melakukan validasi form sebelum proses login <br>
-Saat ditekan akan mengecek `_formKey.currentState!.validate()` <br>
+## UI (User Interface)
 
-`_menuRegistrasi()`
+### 1. ui/login_page.dart
 
-Navigasi ke halaman RegistrasiPage menggunakan `Navigator.push()` <br>
-Menggunakan widget InkWell untuk tap gesture <br>
+<img width="144" height="308" alt="Login" src="https://github.com/user-attachments/assets/f2f615cf-89ef-4de8-b29a-1719b539bd6f" />
+<img width="144" height="308" alt="Login-filled" src="https://github.com/user-attachments/assets/7a8fdc88-44bf-4ef1-b65f-cb572c95a046" />
 
-Fitur: <br>
+**Fungsi Utama:**
+Halaman untuk autentikasi pengguna masuk ke aplikasi.
 
-* Form validation untuk email dan password
-* Navigasi ke halaman registrasi
-* AppBar dengan judul "Login Fikri"
+**State Management:**
+- `_formKey` - GlobalKey untuk validasi form
+- `_isLoading` - Boolean untuk status loading
+- `_emailTextboxController` - Controller untuk input email
+- `_passwordTextboxController` - Controller untuk input password
 
-## ui/registrasi_page.dart
-Fungsi Utama: Halaman untuk mendaftarkan pengguna baru ke dalam sistem. <br>
-State Management:
+**Widget Components:**
 
-* `_formKey` - GlobalKey untuk validasi form
-* `_isLoading` - Boolean status loading
-* `_namaTextboxController` - Controller input nama
-* `_emailTextboxController` - Controller input email
-* `_passwordTextboxController` - Controller input password
+#### `_emailTextField()`
+- Input field untuk email pengguna
+- Validasi: email harus diisi (tidak boleh kosong)
+- Keyboard type: emailAddress
 
-Widget Components:
-`_namaTextField()`
+#### `_passwordTextField()`
+- Input field untuk password
+- Property `obscureText: true` untuk menyembunyikan karakter password
+- Validasi: password harus diisi
 
-Input field untuk nama lengkap pengguna <br>
-Validasi: minimal 3 karakter <br>
-Pesan error: "Nama harus diisi minimal 3 karakter"
+#### `_buttonLogin()`
+- Tombol untuk submit form login
+- Melakukan validasi form sebelum proses login
+- Saat ditekan akan mengecek `_formKey.currentState!.validate()`
 
-`_emailTextField()`
+#### `_menuRegistrasi()`
+- Link text "Registrasi" dengan styling biru
+- Navigasi ke halaman RegistrasiPage menggunakan `Navigator.push()`
+- Menggunakan widget `InkWell` untuk tap gesture
 
-Input field untuk email <br>
-Validasi ganda: <br>
+---
 
-* Tidak boleh kosong
-* Format email harus valid (menggunakan RegEx pattern)
+### 2. ui/registrasi_page.dart
 
+<img width="144" height="308" alt="image" src="https://github.com/user-attachments/assets/9e77193f-4609-42cf-ada7-efa86dd71298" />
+<img width="144" height="308" alt="image" src="https://github.com/user-attachments/assets/81e158c0-ffd3-4646-addd-d7e55d5e8b1b" />
 
-Pattern regex untuk validasi format email standar <br>
-Pesan error: "Email tidak valid" jika format salah
+**Fungsi Utama:**
+Halaman untuk mendaftarkan pengguna baru ke dalam sistem.
 
-`_passwordTextField()`
+**State Management:**
+- `_formKey` - GlobalKey untuk validasi form
+- `_isLoading` - Boolean status loading
+- `_namaTextboxController` - Controller input nama
+- `_emailTextboxController` - Controller input email
+- `_passwordTextboxController` - Controller input password
 
-Input field untuk password dengan obscureText: true <br>
-Validasi: minimal 6 karakter <br>
-Pesan error: "Password harus diisi minimal 6 karakter"
+**Widget Components:**
 
-`_passwordKonfirmasiTextField()`
+#### `_namaTextField()`
+- Input field untuk nama lengkap pengguna
+- Validasi: minimal 3 karakter
+- Pesan error: "Nama harus diisi minimal 3 karakter"
 
-Input field untuk konfirmasi password <br>
-Validasi: harus sama dengan password yang diinput sebelumnya <br>
-Membandingkan value dengan `_passwordTextboxController.text` <br>
-Pesan error: "Konfirmasi Password tidak sama"
+#### `_emailTextField()`
+- Input field untuk email
+- Validasi ganda:
+  1. Tidak boleh kosong
+  2. Format email harus valid (menggunakan RegEx pattern)
+- Pattern regex untuk validasi format email standar
+- Pesan error: "Email tidak valid" jika format salah
 
-`_buttonRegistrasi()`
+#### `_passwordTextField()`
+- Input field untuk password dengan `obscureText: true`
+- Validasi: minimal 6 karakter
+- Pesan error: "Password harus diisi minimal 6 karakter"
 
-Tombol submit untuk proses registrasi <br>
-Validasi semua field sebelum proses <br>
-Set `_isLoading` = true saat form valid
+#### `_passwordKonfirmasiTextField()`
+- Input field untuk konfirmasi password
+- Validasi: harus sama dengan password yang diinput sebelumnya
+- Membandingkan value dengan `_passwordTextboxController.text`
+- Pesan error: "Konfirmasi Password tidak sama"
 
-Fitur: <br>
+#### `_buttonRegistrasi()`
+- Tombol submit untuk proses registrasi
+- Validasi semua field sebelum proses
+- Set `_isLoading = true` saat form valid
 
-* Validasi form lengkap (nama, email, password, konfirmasi password)
-* Validasi format email dengan RegEx
-* Validasi kecocokan password
-* AppBar dengan judul "Registrasi Fikri"
+**Fitur:**
+- Validasi form lengkap (nama, email, password, konfirmasi password)
+- Validasi format email dengan RegEx
+- Validasi kecocokan password
+- AppBar dengan judul "Registrasi Fikri"
 
-## ui/produk_page.dart
-Fungsi Utama: Halaman utama yang menampilkan daftar produk dalam bentuk list. <br>
-Komponen Utama:
-* AppBar Actions
+---
 
-Icon tambah (+) di pojok kanan atas <br>
-Navigasi ke ProdukForm() untuk menambah produk baru <br>
+### 3. ui/produk_page.dart
 
-* Drawer (Side Menu)
+<img width="144" height="308" alt="image" src="https://github.com/user-attachments/assets/8f84a769-9f42-4375-b90b-e5f25a62a7f7" />
 
-Menu drawer dengan list item
+**Fungsi Utama:**
+Halaman utama yang menampilkan daftar produk dalam bentuk list.
 
-* Body - ListView
+**Komponen Utama:**
+
+#### AppBar Actions
+- Icon tambah (+) di pojok kanan atas
+- Navigasi ke `ProdukForm()` untuk menambah produk baru
+- Menggunakan `GestureDetector` dengan size icon 26.0
+
+#### Drawer (Side Menu)
+- Menu drawer dengan list item
+- Item "Logout" dengan icon logout
+- Siap untuk implementasi fungsi logout
+
+#### Body - ListView
 Menampilkan 3 produk hardcoded sebagai contoh data:
+1. **Kamera** - Kode: A001, Harga: 5.000.000
+2. **Kulkas** - Kode: A002, Harga: 2.500.000
+3. **Mesin Cuci** - Kode: A003, Harga: 2.000.000
 
-* Kamera - Kode: A001, Harga: 5.000.000
-* Kulkas - Kode: A002, Harga: 2.500.000
-* Mesin Cuci - Kode: A003, Harga: 2.000.000
+**Widget ItemProduk:**
+- StatelessWidget terpisah untuk menampilkan item produk
+- Menggunakan `Card` dan `ListTile`
+- Property:
+  - `title`: Nama produk
+  - `subtitle`: Harga produk
+- `GestureDetector` untuk navigasi ke `ProdukDetail`
+- Mengirim object produk ke halaman detail
 
-Widget ItemProduk: <br>
+---
 
-StatelessWidget terpisah untuk menampilkan item produk <br>
-Menggunakan `Card` dan `ListTile` <br>
-Property:
-* title: Nama produk
-* subtitle: Harga produk
+### 4. ui/produk_form.dart
 
-`GestureDetector` untuk navigasi ke `ProdukDetail` <br>
-Mengirim object produk ke halaman detail <br>
+<img width="144" height="308" alt="image" src="https://github.com/user-attachments/assets/4a71c61e-89b5-4bd1-98b3-a22481f679b4" />
+<img width="144" height="308" alt="image" src="https://github.com/user-attachments/assets/92138fb2-cdc9-4f01-9dbc-20be4b093437" />
 
-Fitur:
+**Fungsi Utama:**
+Halaman form untuk menambah produk baru atau mengedit produk yang sudah ada. Form ini bersifat dinamis tergantung mode (tambah/edit).
 
-* List view produk
-* Navigasi ke form tambah produk
-* Navigasi ke detail produk saat item di-tap
-* Drawer menu dengan opsi logout
-* AppBar dengan judul "List Produk Fikri"
+**State Management:**
+- `_formKey` - GlobalKey untuk validasi form
+- `_isLoading` - Boolean status loading
+- `judul` - String judul halaman (dinamis)
+- `tombolSubmit` - String label tombol (dinamis)
+- `_kodeProdukTextboxController` - Controller input kode produk
+- `_namaProdukTextboxController` - Controller input nama produk
+- `_hargaProdukTextboxController` - Controller input harga
 
-## ui/produk_form.dart
-Fungsi Utama: Halaman form untuk menambah produk baru atau mengedit produk yang sudah ada. Form ini bersifat dinamis tergantung mode (tambah/edit). <br>
-State Management:
+**Method Penting:**
 
-* `_formKey` - GlobalKey untuk validasi form
-* `_isLoading` - Boolean status loading
-* `judul` - String judul halaman (dinamis)
-* `tombolSubmit` - String label tombol (dinamis)
-* `_kodeProdukTextboxController` - Controller input kode produk
-* `_namaProdukTextboxController` - Controller input nama produk
-* `_hargaProdukTextboxController` - Controller input harga
+#### `initState()`
+- Lifecycle method yang dipanggil saat widget pertama kali dibuat
+- Memanggil method `isUpdate()` untuk cek mode form
 
-Method Penting:
-`initState()`
-
-Lifecycle method yang dipanggil saat widget pertama kali dibuat <br>
-Memanggil method `isUpdate()` untuk cek mode form <br>
-
-`isUpdate()`
+#### `isUpdate()`
 Method untuk mendeteksi mode form (tambah atau edit):
+- **Mode Edit** (jika `widget.produk != null`):
+  - Judul: "UBAH PRODUK FIKRI"
+  - Tombol: "UBAH"
+  - Pre-fill semua textfield dengan data produk yang akan diedit
+- **Mode Tambah** (jika `widget.produk == null`):
+  - Judul: "TAMBAH PRODUK FIKRI"
+  - Tombol: "SIMPAN"
+  - Textfield kosong
 
-Mode Edit (jika `widget.produk != null`):
-* Judul: "UBAH PRODUK FIKRI"
-* Tombol: "UBAH"
-* Pre-fill semua textfield dengan data produk yang akan diedit
+**Widget Components:**
 
-Mode Tambah (jika `widget.produk == null`):
-* Judul: "TAMBAH PRODUK FIKRI"
-* Tombol: "SIMPAN"
-* Textfield kosong
+#### `_kodeProdukTextField()`
+- Input untuk kode produk (contoh: A001, A002)
+- Keyboard type: text
+- Validasi: tidak boleh kosong
+- Pesan error: "Kode Produk harus diisi"
 
-Widget Components:
-`_kodeProdukTextField()`
+#### `_namaProdukTextField()`
+- Input untuk nama produk
+- Keyboard type: text
+- Validasi: tidak boleh kosong
+- Pesan error: "Nama Produk harus diisi"
 
-Input untuk kode produk (contoh: A001, A002) <br>
-Keyboard type: text <br>
-Validasi: tidak boleh kosong <br>
-Pesan error: "Kode Produk harus diisi" <br>
+#### `_hargaProdukTextField()`
+- Input untuk harga produk
+- Keyboard type: number (angka saja)
+- Validasi: tidak boleh kosong
+- Pesan error: "Harga harus diisi"
 
-`_namaProdukTextField()`
+#### `_buttonSubmit()`
+- Tombol dengan label dinamis ("SIMPAN" atau "UBAH")
+- Melakukan validasi form saat ditekan
+- Menggunakan `OutlinedButton` style
 
-Input untuk nama produk <br>
-Keyboard type: text <br>
-Validasi: tidak boleh kosong <br>
-Pesan error: "Nama Produk harus diisi" <br>
+---
 
-`_hargaProdukTextField()`
+### 5. ui/produk_detail.dart
 
-* Input untuk harga produk
-* Keyboard type: number (angka saja)
-* Validasi: tidak boleh kosong
-* Pesan error: "Harga harus diisi"
+<img width="144" height="308" alt="image" src="https://github.com/user-attachments/assets/74816ffe-d9d8-4a04-b3cd-4fa8b5c53c31" />
+<img width="144" height="308" alt="image" src="https://github.com/user-attachments/assets/adee8972-36ba-4a5b-98f4-c06b5c569ccb" />
+<img width="144" height="308" alt="image" src="https://github.com/user-attachments/assets/2eb800e7-a163-4de8-8add-161d8de1dfb7" />
 
-`_buttonSubmit()`
+**Fungsi Utama:**
+Halaman untuk menampilkan detail lengkap dari satu produk dan menyediakan aksi edit atau hapus.
 
-Tombol dengan label dinamis ("SIMPAN" atau "UBAH") <br>
-Melakukan validasi form saat ditekan <br>
-Menggunakan `OutlinedButton` style <br>
+**Properti:**
+- `produk` (Produk?) - Object produk yang akan ditampilkan detailnya
 
-Fitur:
-* Form dinamis untuk tambah dan edit produk
-* Auto-fill data saat mode edit
-* Validasi semua input field
-* AppBar dengan judul dinamis
+**Widget Components:**
 
-## ui/produk_detail.dart
-Fungsi Utama: Halaman untuk menampilkan detail lengkap dari satu produk dan menyediakan aksi edit atau hapus. <br>
-Properti:
-`produk (Produk?)` - Object produk yang akan ditampilkan detailnya <br>
-
-Widget Components: <br>
-Body Content <br>
+#### Body Content
 Menampilkan informasi produk dalam Column:
+- **Kode**: Menampilkan kode produk (font size 20.0)
+- **Nama**: Menampilkan nama produk (font size 18.0)
+- **Harga**: Menampilkan harga dengan format "Rp. " (font size 18.0)
 
-* Kode: Menampilkan kode produk (font size 20.0)
-* Nama: Menampilkan nama produk (font size 18.0)
-* Harga: Menampilkan harga dengan format "Rp. " (font size 18.0)
-
-`_tombolHapusEdit()` <br>
+#### `_tombolHapusEdit()`
 Row berisi dua tombol aksi:
-1. Tombol EDIT:
-* Style: `OutlinedButton`
-* Fungsi: Navigasi ke `ProdukForm` dengan mengirim data produk
-* Passing object `widget.produk!` agar form ter-populate dengan data
 
-2. Tombol DELETE:
-* Style: `OutlinedButton`
-* Fungsi: Memanggil method `confirmHapus()`
-* Menampilkan dialog konfirmasi sebelum menghapus
+**1. Tombol EDIT:**
+- Style: `OutlinedButton`
+- Fungsi: Navigasi ke `ProdukForm` dengan mengirim data produk
+- Passing object `widget.produk!` agar form ter-populate dengan data
 
-`confirmHapus()` <br>
-Method untuk menampilkan dialog konfirmasi hapus: <br>
-Dialog Content:
-* Pesan: "Yakin ingin menghapus data ini?"
-Action Buttons:
-Tombol "Ya":
-* Kode untuk delete masih dikomentari
-* Seharusnya memanggil `ProdukBloc.deleteProduk()`
-* Navigasi kembali ke `ProdukPage` setelah berhasil
-* Error handling dengan `WarningDialog`
+**2. Tombol DELETE:**
+- Style: `OutlinedButton`
+- Fungsi: Memanggil method `confirmHapus()`
+- Menampilkan dialog konfirmasi sebelum menghapus
 
-Tombol "Batal":
-* Menutup dialog dengan `Navigator.pop(context)` 
-* Membatalkan proses hapus
+#### `confirmHapus()`
+Method untuk menampilkan dialog konfirmasi hapus:
 
-Fitur:
-* Menampilkan detail lengkap produk
-* Tombol edit ke form produk
-* Dialog konfirmasi sebelum hapus
-* AppBar dengan judul "Detail Produk Fikri"
-* Center alignment untuk semua konten
+**Dialog Content:**
+- Pesan: "Yakin ingin menghapus data ini?"
+
+**Action Buttons:**
+1. **Tombol "Ya":**
+   - Kode untuk delete masih dikomentari
+   - Seharusnya memanggil `ProdukBloc.deleteProduk()`
+   - Navigasi kembali ke `ProdukPage` setelah berhasil
+   - Error handling dengan `WarningDialog`
+
+2. **Tombol "Batal":**
+   - Menutup dialog dengan `Navigator.pop(context)`
+   - Membatalkan proses hapus
